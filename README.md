@@ -43,3 +43,11 @@ Challenge submission for the AUJ community (#mobile challenge).
    ```bash
    git clone https://github.com/MavRial/Simple-ToDo.git
    cd Simple-ToDo
+
+
+Open the project in Android Studio.
+
+Add your Firebase configuration file: google-services.json in:
+app/src/main/
+
+Sync Gradle and run the app.
