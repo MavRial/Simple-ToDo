@@ -1,9 +1,12 @@
 package com.example.simple_todo.di
 
+import com.example.simple_todo.data.local.TaskDao
 import com.example.simple_todo.data.local.UserDao
 import com.example.simple_todo.data.repository.AuthRepositoryImpl
+import com.example.simple_todo.data.repository.TaskRepositoryImpl
 import com.example.simple_todo.data.repository.UserRepositoryImpl
 import com.example.simple_todo.domain.repository.AuthRepository
+import com.example.simple_todo.domain.repository.TaskRepository
 import com.example.simple_todo.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -29,5 +32,13 @@ object RepositoryModule {
         dao: UserDao,
         firestore: FirebaseFirestore
     ): UserRepository = UserRepositoryImpl(dao, firestore)
+
+    @Provides
+    @Singleton
+    fun provideTaskRepository(
+        dao: TaskDao,
+        auth: AuthRepository,
+        firestore: FirebaseFirestore
+    ): TaskRepository = TaskRepositoryImpl(dao, auth, firestore)
 
 }

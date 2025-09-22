@@ -2,7 +2,9 @@ package com.example.simple_todo.presentation.screen.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.simple_todo.domain.model.User
 import com.example.simple_todo.domain.usecase.AuthUseCases
+import com.example.simple_todo.domain.usecase.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,12 +14,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authUseCases: AuthUseCases
+    private val authUseCases: AuthUseCases,
+    private val userUseCases: UserUseCases
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<LoginUIState>(LoginUIState.Idle)
     val uiState: StateFlow<LoginUIState> = _uiState.asStateFlow()
-
 
     private fun validateCredentials(email: String, password: String): String? {
         if (email.isBlank()) return "El correo no puede estar vacío"
@@ -37,10 +39,13 @@ class LoginViewModel @Inject constructor(
         _uiState.value = LoginUIState.Loading
 
         val result = authUseCases.login(email, password)
-        _uiState.value = if (result.isSuccess) {
-            LoginUIState.Success
+        if (result.isSuccess) {
+            val uid = result.getOrThrow()
+            val user = User(uid = uid, email = email)
+            userUseCases.saveUser(user)
+            _uiState.value = LoginUIState.Success
         } else {
-            LoginUIState.Error(result.exceptionOrNull()?.message ?: "Error desconocido")
+            _uiState.value = LoginUIState.Error(result.exceptionOrNull()?.message ?: "Error desconocido")
         }
     }
 
@@ -54,10 +59,13 @@ class LoginViewModel @Inject constructor(
         _uiState.value = LoginUIState.Loading
 
         val result = authUseCases.register(email, password)
-        _uiState.value = if (result.isSuccess) {
-            LoginUIState.Success
+        if (result.isSuccess) {
+            val uid = result.getOrThrow()
+            val user = User(uid = uid, email = email)
+            userUseCases.saveUser(user)
+            _uiState.value = LoginUIState.Success
         } else {
-            LoginUIState.Error(result.exceptionOrNull()?.message ?: "Error desconocido")
+            _uiState.value = LoginUIState.Error(result.exceptionOrNull()?.message ?: "Error desconocido")
         }
     }
 }
