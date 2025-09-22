@@ -29,6 +29,6 @@ fun AppText(
         fontWeight = fontWeight,
         color = color,
         maxLines = maxLines,
-        style = style ?: TextStyle.Default
+        style = style ?: TextStyle.Default,
     )
 }
